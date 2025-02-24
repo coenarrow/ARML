@@ -1,3 +1,13 @@
+datasets/*
+checkpoints/*
+mxnet.zip
+environment_full.yml
+environment.yml
+init_weights/*
+slurm_out/*
+.vscode
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
