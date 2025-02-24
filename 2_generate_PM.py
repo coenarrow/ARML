@@ -32,6 +32,16 @@ if __name__ == '__main__':
         palette[6:9] = [0,0,255]
         palette[9:12] = [153, 0, 255]
         palette[12:15] = [255, 255, 255]
+    elif args.dataset == 't2f': # this is just a copy of the bcss palette
+        palette = [0]*15
+        palette[0:3] = [255, 0, 0]
+        palette[3:6] = [0,255,0]
+        palette[6:9] = [0,0,255]
+        palette[9:12] = [153, 0, 255]
+        palette[12:15] = [255, 255, 255]
+    else:
+        raise ValueError('Unknown dataset')
+
     PMpath = os.path.join(args.dataroot,'train_PM')
     if not os.path.exists(PMpath):
         os.mkdir(PMpath)
