@@ -17,8 +17,8 @@ cudnn.enabled = True
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", default=20, type=int)
-    parser.add_argument("--max_epoches", default=20, type=int)
+    parser.add_argument("--batch_size", default=128, type=int)
+    parser.add_argument("--max_epoches", default=1, type=int)
     parser.add_argument("--network", default="network.resnet38_cls", type=str)
     parser.add_argument("--lr", default=0.01, type=float)
     parser.add_argument("--num_workers", default=0, type=int)
@@ -133,6 +133,7 @@ def train_phase(args):
         if model.gama > 0.65:
             model.gama = model.gama*0.98
         print('Gama of progressive dropout attention is: ',model.gama)
+        print(f"Current Loss: {avg_meter.get('loss')}")
     torch.save(model.state_dict(), os.path.join(args.save_folder, 'stage1_checkpoint_trained_on_'+args.dataset+'_'+args.model_name+'.pth'))
 
 def test_phase(args):
