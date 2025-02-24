@@ -30,7 +30,7 @@ class Stage1_InferDataset(Dataset):
             for f in filename:
                 image_path = os.path.join(root, f)
                 path_list.append(image_path)
-        return path_list
+        return path_list[0:256]
 
 class Stage1_TrainDataset(Dataset):
     def __init__(self, data_path, transform=None, target_transform=None, dataset=None):
@@ -70,7 +70,7 @@ class Stage1_TrainDataset(Dataset):
                 else:
                     raise ValueError('Unknown dataset')
                 path_label.append((image_path, image_label))
-        return path_label
+        return path_label[0:256]
 
 class Stage2_Dataset(Dataset):
     def __init__(self, args, base_dir, split):
