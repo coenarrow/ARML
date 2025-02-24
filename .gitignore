@@ -1,5 +1,9 @@
 datasets/*
 checkpoints/*
+mxnet.zip
+environment_full.yml
+environment.yml
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
