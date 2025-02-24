@@ -1,5 +1,3 @@
-import imp
-from pdb import set_trace
 import numpy as np
 import torch
 from torch.backends import cudnn
@@ -13,7 +11,7 @@ import cv2
 from tool import infer_utils
 from tool.GenDataset import Stage1_InferDataset
 from torchvision import transforms
-from tool.gradcam import GradCam, SmoothScoreCAM
+from tool.gradcam import GradCam
 def CVImageToPIL(img):
     img = img[:,:,::-1]
     img = Image.fromarray(np.uint8(img))
