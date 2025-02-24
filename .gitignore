@@ -3,6 +3,7 @@ checkpoints/*
 mxnet.zip
 environment_full.yml
 environment.yml
+init_weights/*
 
 
 # Byte-compiled / optimized / DLL files
