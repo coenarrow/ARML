@@ -32,6 +32,7 @@ class Stage1_InferDataset(Dataset):
                 path_list.append(image_path)
         return path_list
 
+
 class Stage1_TrainDataset(Dataset):
     def __init__(self, data_path, transform=None, target_transform=None, dataset=None):
         self.data_path = data_path
@@ -55,18 +56,27 @@ class Stage1_TrainDataset(Dataset):
         path_label = []
         for root, dirname, filename in os.walk(self.data_path):
             for f in filename:
+                if not f.endswith('.png'):
+                    continue
                 image_path = os.path.join(root, f)
                 fname = f[:-4]
                 ##  Extract the image-level label from the filename
                 ##  LUAD-HistoSeg   : 'Image-name-of-BCSS'+'+index'+'[abcd]'.png
                 ##  BCSS-WSSS       : 'patient_ID'+'_x-axis'+'_y-axis'+'[a b c d]'.png
+                ##  t2f             : 'scan_ID'+'-slice_num'[abcd]'.png
                 label_str = fname.split(']')[0].split('[')[-1]
                 if self.dataset == 'luad':
                     image_label = torch.Tensor([int(label_str[0]),int(label_str[2]),int(label_str[4]),int(label_str[6])])
                 elif self.dataset == 'bcss':
                     image_label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
+                elif self.dataset == 't2f':
+                    image_label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
+                else:
+                    raise ValueError('Unknown dataset')
                 path_label.append((image_path, image_label))
         return path_label
+
+
 
 class Stage2_Dataset(Dataset):
     def __init__(self, args, base_dir, split):
