@@ -4,11 +4,7 @@ import os
 import numpy as np
 import argparse
 import importlib
-import random
-from visdom import Visdom
-import network.resnet38_cls
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torch.backends import cudnn
 from torch.utils.data import DataLoader
@@ -17,6 +13,27 @@ from tool import pyutils, torchutils
 from tool.GenDataset import Stage1_TrainDataset
 from tool.infer_fun import infer
 cudnn.enabled = True
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--batch_size", default=20, type=int)
+    parser.add_argument("--max_epoches", default=20, type=int)
+    parser.add_argument("--network", default="network.resnet38_cls", type=str)
+    parser.add_argument("--lr", default=0.01, type=float)
+    parser.add_argument("--num_workers", default=0, type=int)
+    parser.add_argument("--wt_dec", default=5e-4, type=float)
+    parser.add_argument("--session_name", default="Stage 1", type=str)
+    parser.add_argument("--env_name", default="PDA", type=str)
+    parser.add_argument("--model_name", default='res38d_arml', type=str)
+    parser.add_argument("--n_class", default=4, type=int)
+    parser.add_argument("--weights", default='init_weights/ilsvrc-cls_rna-a1_cls1000_ep-0001.params', type=str)
+    parser.add_argument("--trainroot", default='datasets/t2f/train/', type=str)
+    parser.add_argument("--testroot", default='datasets/t2f/val/', type=str)
+    parser.add_argument("--save_folder", default='checkpoints/',  type=str)
+    parser.add_argument("--init_gama", default=1, type=float)
+    parser.add_argument("--dataset", default='t2f', type=str)
+    args = parser.parse_args()
+    return args
 
 def train_phase(args):
     # viz = Visdom(env=args.env_name)
@@ -131,24 +148,7 @@ def test_phase(args):
     # torch.save(model.state_dict(), os.path.join(args.save_folder, 'stage1_checkpoint_trained_on_'+args.dataset+'.pth'))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", default=20, type=int)
-    parser.add_argument("--max_epoches", default=20, type=int)
-    parser.add_argument("--network", default="network.resnet38_cls", type=str)
-    parser.add_argument("--lr", default=0.01, type=float)
-    parser.add_argument("--num_workers", default=0, type=int)
-    parser.add_argument("--wt_dec", default=5e-4, type=float)
-    parser.add_argument("--session_name", default="Stage 1", type=str)
-    parser.add_argument("--env_name", default="PDA", type=str)
-    parser.add_argument("--model_name", default='res38d_arml', type=str)
-    parser.add_argument("--n_class", default=4, type=int)
-    parser.add_argument("--weights", default='init_weights/ilsvrc-cls_rna-a1_cls1000_ep-0001.params', type=str)
-    parser.add_argument("--trainroot", default='datasets/BCSS-WSSS/train/', type=str)
-    parser.add_argument("--testroot", default='datasets/BCSS-WSSS/test/', type=str)
-    parser.add_argument("--save_folder", default='checkpoints/',  type=str)
-    parser.add_argument("--init_gama", default=1, type=float)
-    parser.add_argument("--dataset", default='bcss', type=str)
-    args = parser.parse_args()
+    args = get_args()
     # print(torch.cuda.memory_allocated())
     # print(torch.cuda.memory_reserved())
     torch.cuda.empty_cache()
