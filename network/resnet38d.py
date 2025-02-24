@@ -1,11 +1,7 @@
 import torch
 from torch import nn
 import numpy as np
-import pdb
-
 import torch.nn.functional as F
-from tool.amm import AMM
-
 
 class DeformConv2d(nn.Module):
     def __init__(self, inc, outc, kernel_size=3, padding=1, stride=1, bias=None, modulation=False):
@@ -398,7 +394,6 @@ class Net(nn.Module):
 
 def convert_mxnet_to_torch(filename):
     import mxnet
-
     save_dict = mxnet.nd.load(filename)
 
     renamed_dict = dict()
