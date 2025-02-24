@@ -4,11 +4,7 @@ import os
 import numpy as np
 import argparse
 import importlib
-import random
-from visdom import Visdom
-import network.resnet38_cls
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torch.backends import cudnn
 from torch.utils.data import DataLoader
