@@ -12,6 +12,8 @@ from tool import infer_utils
 from tool.GenDataset import Stage1_InferDataset
 from torchvision import transforms
 from tool.gradcam import GradCam
+from tqdm import tqdm
+
 def CVImageToPIL(img):
     img = img[:,:,::-1]
     img = Image.fromarray(np.uint8(img))
@@ -105,7 +107,7 @@ def create_pseudo_mask(model, dataroot, fm, savepath, n_class, palette, dataset)
                                 shuffle=False,
                                 num_workers=8,
                                 pin_memory=False)
-    for iter, (img_name, img_list) in enumerate(infer_data_loader):      
+    for iter, (img_name, img_list) in tqdm(enumerate(infer_data_loader)):      
         img_name = img_name[0]
         # print(img_name)
         # img_path = os.path.join(os.path.join(dataroot,''),img_name.split('\\')[1] + '/' + img_name.split('\\')[2] + '.png')
@@ -147,6 +149,10 @@ def create_pseudo_mask(model, dataroot, fm, savepath, n_class, palette, dataset)
             label = torch.Tensor([int(label_str[0]),int(label_str[2]),int(label_str[4]),int(label_str[6])])
         elif dataset == 'bcss':
             label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
+        elif dataset == 't2f':
+            label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
+        else:
+            raise ValueError(f"Dataset not yet configured: {dataset}")
 
         cam_dict = infer_utils.cam_npy_to_cam_dict(norm_cam, label)
         cam_score, bg_score = infer_utils.dict2npy(cam_dict, label, orig_img, None) #此处加入了背景，做修改
@@ -159,6 +165,12 @@ def create_pseudo_mask(model, dataroot, fm, savepath, n_class, palette, dataset)
         elif dataset == 'bcss':
             bg_score = np.zeros((1,224,224))
             bgcam_score = np.concatenate((cam_score, bg_score), axis=0)
+        ## Just copy the version of bcss for t2f
+        elif dataset == 't2f':
+            bg_score = np.zeros((1,224,224))
+            bgcam_score = np.concatenate((cam_score, bg_score), axis=0)
+        else:
+            raise ValueError(f"Dataset not yet configured: {dataset}")
         seg_map = infer_utils.cam_npy_to_label_map(bgcam_score)
         # print(seg_map)
         visualimg  = Image.fromarray(seg_map.astype(np.uint8), "P")
