@@ -14,30 +14,18 @@ export PYTHONPATH=$PYTHONPATH:$REPO_DIR
 cd $REPO_DIR
 echo "Current Working Directory: $(pwd)"
 
-module load Anaconda3/2024.06
 module load cuda/12.4
 module list
 
-# Detect the operating system
-OS=$(uname)
-
-# Source conda for Linux/macOS or activate conda for Windows
-if [[ "$OS" == "Linux" || "$OS" == "Darwin" ]]; then
-    # For Linux and macOS
-    source "$(conda info --base)/etc/profile.d/conda.sh"
-    conda activate /group/pgh004/carrow/repo/ARML/env
-else
-    # For Windows
-    eval "$(conda shell.bash hook)"
-    conda activate ./env
-fi
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate /group/pgh004/carrow/repo/ARML/env
 
 echo "Activated Conda Environment"
 conda info --envs
 
 echo "Using python: $(which python)"
-python -m pip list | grep mxnet
+python -c "import mxnet; print('mxnet imported successfully')"
 
 echo "Start Time: $(date)"
-python 1_train_stage1.py --dataset bcss --trainroot datasets/BCSS-WSSS/training/ --testroot dataset/BCSS-WSSS/test/ --max_epoches 20
+python 1_train_stage1.py --dataset bcss --trainroot datasets/BCSS-WSSS/train/ --testroot dataset/BCSS-WSSS/test/ --max_epoches 1
 echo "End Time: $(date)"

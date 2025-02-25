@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=bcss2
-#SBATCH --output=slurm_out/%A_bcss2.out
-#SBATCH --error=slurm_out/%A_bcss2.err
+#SBATCH --job-name=t2f1
+#SBATCH --output=slurm_out/%A_t2f1.out
+#SBATCH --error=slurm_out/%A_t2f1.err
 #SBATCH --partition=pophealth
 #SBATCH --nodes=1
 #SBATCH --ntasks=12
@@ -38,5 +38,5 @@ echo "Using python: $(which python)"
 python -m pip list | grep mxnet
 
 echo "Start Time: $(date)"
-python 2_generate_PM.py --dataroot datasets/BCSS-WSSS --dataset bcss
+python 1_train_stage1.py --dataset t2f --trainroot datasets/t2f/train/ --testroot dataset/t2f/val/ --max_epoches 1 --batch_size 24
 echo "End Time: $(date)"
