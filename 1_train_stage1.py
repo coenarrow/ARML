@@ -17,8 +17,8 @@ cudnn.enabled = True
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch_size", default=128, type=int)
-    parser.add_argument("--max_epoches", default=1, type=int)
+    parser.add_argument("--batch_size", default=20, type=int)
+    parser.add_argument("--max_epoches", default=20, type=int)
     parser.add_argument("--network", default="network.resnet38_cls", type=str)
     parser.add_argument("--lr", default=0.01, type=float)
     parser.add_argument("--num_workers", default=0, type=int)
@@ -28,11 +28,11 @@ def get_args():
     parser.add_argument("--model_name", default='res38d_arml', type=str)
     parser.add_argument("--n_class", default=4, type=int)
     parser.add_argument("--weights", default='init_weights/ilsvrc-cls_rna-a1_cls1000_ep-0001.params', type=str)
-    parser.add_argument("--trainroot", default='datasets/t2f/train/', type=str)
-    parser.add_argument("--testroot", default='datasets/t2f/val/', type=str)
+    parser.add_argument("--trainroot", default='datasets/BCSS-WSSS/train/', type=str)
+    parser.add_argument("--testroot", default='datasets/BCSS-WSSS/test/', type=str)
     parser.add_argument("--save_folder", default='checkpoints/',  type=str)
     parser.add_argument("--init_gama", default=1, type=float)
-    parser.add_argument("--dataset", default='t2f', type=str)
+    parser.add_argument("--dataset", default='bcss', type=str)
     args = parser.parse_args()
     return args
 
