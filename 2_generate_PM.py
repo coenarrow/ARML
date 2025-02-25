@@ -50,20 +50,10 @@ if __name__ == '__main__':
     model.eval()
     model.cuda()
     #
-    fm = 'b4_5'
-    savepath = os.path.join(PMpath,'PM_'+'res38d_arml'+fm)
-    if not os.path.exists(savepath):
-        os.mkdir(savepath)
-    create_pseudo_mask(model, args.dataroot, fm, savepath, args.n_class, palette, args.dataset)
-    ##
-    fm = 'b5_2'
-    savepath = os.path.join(PMpath,'PM_'+'res38d_arml'+fm)
-    if not os.path.exists(savepath):
-        os.mkdir(savepath)
-    create_pseudo_mask(model, args.dataroot, fm, savepath, args.n_class, palette, args.dataset)
-    #
-    fm = 'bn7'
-    savepath = os.path.join(PMpath,'PM_'+'res38d_arml'+fm)
-    if not os.path.exists(savepath):
-        os.mkdir(savepath)
-    create_pseudo_mask(model, args.dataroot, fm, savepath, args.n_class, palette, args.dataset)
+    fms = ['b4_5','b5_2','bn7']
+    for i, fm in enumerate(fms):
+        print(f"Running on {i}/{len(fms)}: {fm}")
+        savepath = os.path.join(PMpath,'PM_'+'res38d_arml'+fm)
+        if not os.path.exists(savepath):
+            os.mkdir(savepath)
+        create_pseudo_mask(model, args.dataroot, fm, savepath, args.n_class, palette, args.dataset)
