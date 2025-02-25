@@ -62,6 +62,8 @@ def process_train_directory(directory):
     saved_impaths = []
 
     normal_filepaths = [os.path.join(normal_dir, filename) for filename in os.listdir(normal_dir) if filename.endswith('.jpg')]
+
+    normal_filepaths = normal_filepaths[:int(0.9*len(normal_filepaths))]
     normal_label = '[1000]'
     for normal_filepath in tqdm(normal_filepaths, desc='Processing normal images'):
         saved_impaths.append(move_and_convert(normal_filepath, img_dir, normal_label))
