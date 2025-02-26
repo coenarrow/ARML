@@ -91,7 +91,10 @@ def compute_acc(pred_labels, gt_labels):
         if pred_label in gt_labels:
             pred_correct_count += 1
     union = len(gt_labels) + len(pred_labels) - pred_correct_count
-    acc = round(pred_correct_count/union, 4)
+    if union == 0:
+        acc = 1.0
+    else:
+        acc = round(pred_correct_count/union, 4)
     return(acc)
 
 
