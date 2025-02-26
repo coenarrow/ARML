@@ -69,7 +69,7 @@ class Stage1_TrainDataset(Dataset):
                     image_label = torch.Tensor([int(label_str[0]),int(label_str[2]),int(label_str[4]),int(label_str[6])])
                 elif self.dataset == 'bcss':
                     image_label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
-                elif self.dataset == 't2f':
+                elif 'brats' in str(self.dataset):
                     image_label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
                 else:
                     raise ValueError('Unknown dataset')
