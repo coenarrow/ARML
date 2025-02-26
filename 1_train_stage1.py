@@ -83,7 +83,7 @@ def train_phase(args):
         ep_count = 0
         ep_EM = 0
         ep_acc = 0
-        for iter, (filename, data, label) in tqdm(enumerate(train_data_loader),total=len(train_dataset.object),miniters=10):
+        for iter, (filename, data, label) in tqdm(enumerate(train_data_loader),total=len(train_dataset.object)//args.batch_size,miniters=10):
             img = data
             label = label.cuda(non_blocking=True)
             if ep > 1:
