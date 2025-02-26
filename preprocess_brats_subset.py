@@ -54,30 +54,58 @@ def move_and_convert(jpg_filepath:str, dest_directory:str,img_label:str):
 
     return dest_png_path
 
-def process_train_directory(directory):
+def process_train_directory(directory, train_split=0.9):
+    normal_label = '[1000]'
+    tumor_label = '[1100]'
+
     normal_dir = os.path.normpath(os.path.join(directory, 'normal'))
     tumor_dir = os.path.normpath(os.path.join(directory, 'tumor'))
-    seg_dir = os.path.normpath(os.path.join(directory, 'seg'))
-    img_dir = os.path.normpath(os.path.join(os.path.dirname(directory), 'train'))
-    saved_impaths = []
 
+    train_dir = os.path.join(os.path.dirname(directory), 'train')
+    val_dir = os.path.join(os.path.dirname(directory), 'val')
+    img_dir = os.path.join(val_dir, 'img')
+    os.makedirs(img_dir,exist_ok=True)
+    mask_dir = os.path.join(val_dir, 'mask')
+    os.makedirs(mask_dir,exist_ok=True)
+
+    dict_list = []
     normal_filepaths = [os.path.join(normal_dir, filename) for filename in os.listdir(normal_dir) if filename.endswith('.jpg')]
-
-    normal_filepaths = normal_filepaths[:int(0.9*len(normal_filepaths))]
-    normal_label = '[1000]'
-    for normal_filepath in tqdm(normal_filepaths, desc='Processing normal images'):
-        saved_impaths.append(move_and_convert(normal_filepath, img_dir, normal_label))
+    for fp in normal_filepaths:
+        dict_list.append({'filepath': fp, 'label': normal_label,'mask_filepath':None})
 
     tumor_filepaths = [os.path.join(tumor_dir, filename) for filename in os.listdir(tumor_dir) if filename.endswith('.jpg')]
-    tumor_label = '[1100]'
-    for tumor_filepath in tqdm(tumor_filepaths, desc='Processing tumor images'):
-        saved_impaths.append(move_and_convert(tumor_filepath, img_dir, tumor_label))
+    for fp in tumor_filepaths:
+        mask_filepath = fp.replace('tumor', 'seg').replace('.jpg', '.png')
+        if not os.path.exists(mask_filepath):
+            raise ValueError(f"Mask not found for {fp}")
+        dict_list.append({'filepath': fp, 'label': tumor_label, 'mask_filepath': mask_filepath})
 
-    num_input_ims = len(normal_filepaths) + len(tumor_filepaths)
-    if num_input_ims != len(saved_impaths):
-        raise ValueError("Number of saved images does not match the number of input images.")
-    else:
-        shutil.rmtree(directory)
+    # split the list into 90-10 random train-val split
+    np.random.seed(0)
+    np.random.shuffle(dict_list)
+    split_idx = int(train_split * len(dict_list))
+    train = dict_list[:split_idx]
+    val = dict_list[split_idx:]
+    
+    pbar = tqdm(train, desc='Moving and converting train images')
+    for item in pbar:
+        output_filepath = move_and_convert(item['filepath'], train_dir, item['label'])
+        item['output_filepath'] = output_filepath
+
+    pbar = tqdm(val, desc='Moving and converting val images')
+    for item in pbar:
+        output_filepath = move_and_convert(item['filepath'], img_dir,'')
+        item['output_filepath'] = output_filepath
+        mask_filepath = os.path.join(mask_dir,os.path.basename(output_filepath))
+        if item['mask_filepath'] is None:
+            imsize = Image.open(item['filepath']).size
+            mask = np.zeros((imsize[1], imsize[0]), dtype=np.uint8)
+        else:
+            mask = create_mask_from_segmentation(item['mask_filepath'])
+        format_and_save_mask(mask, PALETTE, mask_filepath)
+        item['mask_filepath'] = mask_filepath
+
+    shutil.rmtree(directory)
     return
 
 def process_val_directory(directory):
@@ -100,6 +128,7 @@ def process_val_directory(directory):
     tumor_label = ''
     for tumor_filepath in tqdm(tumor_filepaths, desc='Processing tumor images'):
         saved_im_paths.append(move_and_convert(tumor_filepath, img_dir, tumor_label))
+    
     saved_mask_paths = []
     normal_imsize = Image.open(normal_filepaths[0]).size
     normal_mask = np.zeros((normal_imsize[1], normal_imsize[0]), dtype=np.uint8)
@@ -127,12 +156,12 @@ def process_val_directory(directory):
     shutil.rmtree(seg_dir)
 
     # rename the directory from 'validate' to 'val'
-    os.rename(directory, directory.replace('validate', 'val'))
+    os.rename(directory, directory.replace('validate', 'test'))
     return
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_dir", default='datasets/t2f', type=str)
+    parser.add_argument("--data_dir", default='datasets/brats/t2f', type=str)
     args = parser.parse_args()
     return args
 

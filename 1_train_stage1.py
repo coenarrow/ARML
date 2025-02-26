@@ -14,6 +14,7 @@ from tool.GenDataset import Stage1_TrainDataset
 from tool.infer_fun import infer
 from tool.infer_utils import compute_acc
 cudnn.enabled = True
+from tqdm import tqdm
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -76,13 +77,13 @@ def train_phase(args):
             'avg_ep_EM',
             'avg_ep_acc')
     timer = pyutils.Timer("Session started: ")
-    for ep in range(args.max_epoches):
+    for ep in tqdm(range(args.max_epoches)):
         model.train()
         args.ep_index = ep
         ep_count = 0
         ep_EM = 0
         ep_acc = 0
-        for iter, (filename, data, label) in enumerate(train_data_loader):
+        for iter, (filename, data, label) in tqdm(enumerate(train_data_loader),total=len(train_dataset.object),miniters=10):
             img = data
             label = label.cuda(non_blocking=True)
             if ep > 1:
