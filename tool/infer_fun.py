@@ -113,7 +113,7 @@ def create_pseudo_mask(model, dataroot, fm, savepath, n_class, palette, dataset)
         # img_path = os.path.join(os.path.join(dataroot,''),img_name.split('\\')[1] + '/' + img_name.split('\\')[2] + '.png')
         img_path = os.path.join(os.path.join(dataroot,'train'),img_name+'.png')
 
-        orig_img = np.asarray(Image.open(img_path))
+        orig_img = np.asarray(Image.open(img_path).convert('RGB'))
         grad_cam = GradCam(model=model, feature_module=ffmm, \
                 target_layer_names=["1"], use_cuda=True)
         # print(model.fc8)
@@ -167,7 +167,7 @@ def create_pseudo_mask(model, dataroot, fm, savepath, n_class, palette, dataset)
             bgcam_score = np.concatenate((cam_score, bg_score), axis=0)
         ## Just copy the version of bcss for t2f
         elif 'brats' in dataset:
-            bg_score = np.zeros((1,224,224))
+            bg_score = np.zeros((1,240,240))
             bgcam_score = np.concatenate((cam_score, bg_score), axis=0)
         else:
             raise ValueError(f"Dataset not yet configured: {dataset}")
