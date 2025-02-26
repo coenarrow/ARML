@@ -109,9 +109,11 @@ class Trainer(object):
             output = self.model(image)
             output2 = self.model(image)
             output3 = self.model(image)
-            one = torch.ones((output.shape[0],1,224,224)).cuda()
-            one2 = torch.ones((output2.shape[0],1,224,224)).cuda()
-            one3 = torch.ones((output3.shape[0],1,224,224)).cuda()
+            # Instead of hardcoding 224, extract the spatial dimensions from your output
+            height, width = output.shape[2], output.shape[3]
+            one = torch.ones((output.shape[0], 1, height, width), device=output.device)
+            one2 = torch.ones((output2.shape[0],1,height,width)).cuda()
+            one3 = torch.ones((output3.shape[0],1,height,width)).cuda()
             output = torch.cat([output,(100 * one * (target==4).unsqueeze(dim = 1))],dim = 1)
             output2 = torch.cat([output2,(100 * one2 * (target==4).unsqueeze(dim = 1))],dim = 1)
             output3 = torch.cat([output3,(100 * one3 * (target==4).unsqueeze(dim = 1))],dim = 1)
