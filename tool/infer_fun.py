@@ -48,7 +48,7 @@ def infer(model, dataroot, n_class):
         # print(img_name)
 
         img_path = os.path.join(os.path.join(dataroot,'img'),img_name+'.png')
-        orig_img = np.asarray(Image.open(img_path))
+        orig_img = np.asarray(Image.open(img_path).convert('RGB'))
         orig_img_size = orig_img.shape[:2]
 
         def _work(i, img, thr=0.25):
@@ -149,7 +149,7 @@ def create_pseudo_mask(model, dataroot, fm, savepath, n_class, palette, dataset)
             label = torch.Tensor([int(label_str[0]),int(label_str[2]),int(label_str[4]),int(label_str[6])])
         elif dataset == 'bcss':
             label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
-        elif dataset == 't2f':
+        elif 'brats' in dataset:
             label = torch.Tensor([int(label_str[0]),int(label_str[1]),int(label_str[2]),int(label_str[3])])
         else:
             raise ValueError(f"Dataset not yet configured: {dataset}")
@@ -166,7 +166,7 @@ def create_pseudo_mask(model, dataroot, fm, savepath, n_class, palette, dataset)
             bg_score = np.zeros((1,224,224))
             bgcam_score = np.concatenate((cam_score, bg_score), axis=0)
         ## Just copy the version of bcss for t2f
-        elif dataset == 't2f':
+        elif 'brats' in dataset:
             bg_score = np.zeros((1,224,224))
             bgcam_score = np.concatenate((cam_score, bg_score), axis=0)
         else:
