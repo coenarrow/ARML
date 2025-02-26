@@ -465,13 +465,13 @@ def cls200_cam_norm_dynamicK(cam_list_200, clust_dict):
 
 
 
-def dict2npy(cam_dict, gt_label, orig_img, th):
+def dict2npy(cam_dict, gt_label, orig_img, background):
     gt_cat = np.where(gt_label==1)[0]
     # print(gt_cat)
     orig_img_size = cam_dict[gt_cat[0]].shape
 
     # bg_score = [np.ones_like(cam_dict[gt_cat[0]])*th]
-    bg_score = [gen_bg_mask(orig_img)]
+    bg_score = [gen_bg_mask(orig_img,background=background)]
     cam_npy = np.zeros((4, orig_img_size[0], orig_img_size[1]))
 
     for gt in gt_cat:
@@ -510,20 +510,27 @@ def BCSS_dict2npy(cam_dict, gt_label, orig_img, th,n_class):
     # cam_npy = np.concatenate((cam_npy, bg_score), axis=0)
     return cam_npy, bg_score
 
-def gen_bg_mask(orig_img):
+def gen_bg_mask(orig_img, background='white'):
     img_array = np.array(orig_img).astype(np.uint8)
-    # if len(img_array.shape) == 2:
-    #     img_array = np.expand_dims(img_array, axis=2)  # 在最后一个维度上添加一个维度
-    #     img_array = np.tile(img_array, (1, 1, 3))
-    # elif len(img_array.shape) == 3:
-    #     pass
-    # print(img_array.shape)
     gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
-    ret, binary = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
-    binary = np.uint8(binary)    
-    dst = morphology.remove_small_objects(binary==255,min_size=50,connectivity=1)
-    bg_mask = np.zeros(orig_img.shape[:2])
-    bg_mask[dst==True]=1.000001
+    if background == 'white':
+        ret, binary = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
+        binary = np.uint8(binary)
+        dst = morphology.remove_small_objects(binary == 255, min_size=50, connectivity=1)
+        bg_mask = np.zeros(orig_img.shape[:2])
+        bg_mask[dst == True] = 1.000001
+    elif background == 'black':
+        # Use a threshold of 1 so that only pixels with value 0 become white (i.e., 255) in the binary mask.
+        ret, binary = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY_INV)
+        binary = np.uint8(binary)
+        dst = morphology.remove_small_objects(binary == 255, min_size=50, connectivity=1)
+        bg_mask = np.zeros(orig_img.shape[:2])
+        bg_mask[dst == True] = 1.000001
+    elif background == None:
+        bg_mask = np.zeros((1, orig_img.shape[0], orig_img.shape[1]))
+    else:
+        raise ValueError(f"Background type {background} is not supported.")
+        
     return bg_mask
 
 
