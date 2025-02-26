@@ -52,7 +52,7 @@ if __name__ == '__main__':
     #
     fms = ['b4_5','b5_2','bn7']
     for i, fm in enumerate(fms):
-        print(f"Running on {i}/{len(fms)}: {fm}")
+        print(f"Running on {i+1}/{len(fms)}: {fm}")
         savepath = os.path.join(PMpath,'PM_'+'res38d_arml'+fm)
         if not os.path.exists(savepath):
             os.mkdir(savepath)
